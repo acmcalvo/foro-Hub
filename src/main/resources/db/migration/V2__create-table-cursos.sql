@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS cursos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    descripcion TEXT
+);
