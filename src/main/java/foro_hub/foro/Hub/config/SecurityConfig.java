@@ -5,13 +5,17 @@ import foro_hub.foro.Hub.domain.usuario.UsuarioRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.http.HttpMethod;
 
 @Configuration
 @EnableWebSecurity
@@ -31,10 +35,9 @@ public class SecurityConfig {
                 throw new UsernameNotFoundException("Usuario no encontrado");
             }
 
-            return org.springframework.security.core.userdetails.User
-                    .withUsername(usuario.getUsername())
+            return User.withUsername(usuario.getUsername())
                     .password(usuario.getPassword())
-                    .roles(usuario.getRole())  // Asignar el rol del usuario
+                    .roles(usuario.getRole())  // Asigna el rol del usuario
                     .build();
         };
     }
@@ -46,13 +49,23 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf().disable()
-                .authorizeHttpRequests()  // Cambiado de authorizeRequests() a authorizeHttpRequests()
-                .requestMatchers("/api/usuarios/registrar").permitAll()  // Permite acceso libre a /registrar
-                .anyRequest().authenticated()  // Requiere autenticación para otros endpoints
-                .and()
+        http.csrf(csrf -> csrf.disable())
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless para no mantener sesiones
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.POST, "/login").permitAll()  // Permite la ruta de login sin autenticación
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll() // Permite acceso a swagger sin autenticación
+                        .anyRequest().authenticated()  // Requiere autenticación para el resto de las rutas
+                )
                 .httpBasic();  // Autenticación básica
         return http.build();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+        return http.getSharedObject(AuthenticationManagerBuilder.class)
+                .userDetailsService(userDetailsService())  // Configuramos el servicio de detalles del usuario
+                .passwordEncoder(passwordEncoder())  // Configuramos el codificador de contraseñas
+                .and()
+                .build();
     }
 }

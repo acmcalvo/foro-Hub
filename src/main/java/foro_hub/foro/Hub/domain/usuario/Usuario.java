@@ -17,5 +17,5 @@ public class Usuario {
 
     private String password;
 
-    private String role;  // Aquí añadimos el campo role
+    private String role;
 }
