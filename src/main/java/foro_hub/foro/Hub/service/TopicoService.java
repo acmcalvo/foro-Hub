@@ -14,17 +14,17 @@ public class TopicoService {
     @Autowired
     private TopicoRepository topicoRepository;
 
-    // Método para obtener todos los tópicos
+//     Método para obtener todos los tópicos
     public List<Topico> obtenerTodosLosTopicos() {
         return topicoRepository.findAll(); // Devuelve una lista con todos los tópicos
     }
 
-    // Método para obtener un tópico por su ID
+//   Método para obtener un tópico por su ID
     public Optional<Topico> obtenerTopicoPorId(Long id) {
         return topicoRepository.findById(id); // Devuelve un Optional del tópico encontrado por ID
     }
 
-    // Método para actualizar un tópico
+//Método para actualizar un tópico
     public Topico actualizarTopico(Topico topico) {
         return topicoRepository.save(topico); // Guarda el tópico actualizado en la base de datos
     }
