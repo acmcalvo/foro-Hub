@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/topicos")
+@RequestMapping("/topico")
 public class TopicoController {
 
     @Autowired
