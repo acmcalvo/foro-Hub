@@ -17,7 +17,7 @@ import java.time.ZoneOffset;
 @Service
 public class TokenService {
 
-    @Value("${foro_hub.security.jwt.secret}")
+    @Value("${API_SECURITY_SECRET}")
     private String apiSecret;
 
     @Autowired
