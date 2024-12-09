@@ -9,12 +9,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
-
-import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/login")
 public class AuthController {
 
     @Autowired
@@ -23,19 +24,24 @@ public class AuthController {
     @Autowired
     private TokenService tokenService;
 
-    @PostMapping("/login")
-    public ResponseEntity<DatosJWTToken> login(@RequestBody @Valid DatosAutenticacionUsuario credentials) {
-        // Crear el token de autenticación usando las credenciales
-        Authentication authToken = new UsernamePasswordAuthenticationToken(credentials.getLogin(),
-                credentials.getClave());
+    @PostMapping("/authenticate")  // Cambio de la ruta aquí
+    public ResponseEntity<DatosJWTToken> authenticateUser(@RequestBody DatosAutenticacionUsuario authenticationData) {
+        // Autenticación del usuario
+        Authentication authToken = new UsernamePasswordAuthenticationToken(
+                authenticationData.getLogin(),
+                authenticationData.getClave()
+        );
 
-        // Autenticar al usuario
-        Authentication usuarioAutenticado = authenticationManager.authenticate(authToken);
+        // Autenticación del usuario
+        Authentication authenticatedUser = authenticationManager.authenticate(authToken);
 
-        // Generar el token JWT
-        String JWTtoken = tokenService.generarToken((Usuario) usuarioAutenticado.getPrincipal());
+        // Obtener el usuario autenticado (UserDetails -> Usuario)
+        Usuario usuarioAutenticado = (Usuario) authenticatedUser.getPrincipal();
 
-        // Devolver el token en un formato estructurado
-        return ResponseEntity.ok(new DatosJWTToken(JWTtoken));
+        // Generar el JWT token
+        String jwtToken = tokenService.generateToken(usuarioAutenticado);
+
+        // Retornar el token en la respuesta
+        return ResponseEntity.ok(new DatosJWTToken(jwtToken));
     }
 }

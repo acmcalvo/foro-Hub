@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Optional;
 
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
@@ -26,25 +25,41 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        // Obtener el token del header
-        var authHeader = request.getHeader("Authorization");
-        if (authHeader != null) {
-            var token = authHeader.replace("Bearer ", "");
-            var nombreUsuario = tokenService.getSubject(token); // extraer el nombre de usuario
-            if (nombreUsuario != null) {
-                // Token válido
-                Optional<Usuario> usuarioOpt = usuarioRepository.findByLogin(nombreUsuario); // Método correcto
+        // Extraer el token del header Authorization
+        String authHeader = request.getHeader("Authorization");
 
-                // Verificar si el usuario existe en la base de datos
-                if (usuarioOpt.isPresent()) {
-                    Usuario usuario = usuarioOpt.get(); // Extraer el usuario del Optional
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7); // Extraer token eliminando el prefijo "Bearer "
 
-                    // Crear el token de autenticación
-                    var authentication = new UsernamePasswordAuthenticationToken(usuario, null, usuario.getAuthorities());
-                    SecurityContextHolder.getContext().setAuthentication(authentication); // Establecer la autenticación
-                }
+            try {
+                procesarAutenticacion(token);
+            } catch (Exception e) {
+                // Configurar respuesta 401 en caso de error de autenticación
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("Error de autenticación: " + e.getMessage());
+                return;
             }
         }
-        filterChain.doFilter(request, response); // Continuar con el filtro
+
+        // Continuar con la cadena de filtros
+        filterChain.doFilter(request, response);
+    }
+
+    private void procesarAutenticacion(String token) {
+        // Validar y extraer el nombre de usuario del token
+        String nombreUsuario = tokenService.getSubject(token);
+        if (nombreUsuario == null) {
+            throw new RuntimeException("Nombre de usuario no encontrado en el token");
+        }
+
+        // Buscar el usuario en la base de datos
+        Usuario usuario = usuarioRepository.findByLogin(nombreUsuario)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        // Crear y establecer la autenticación en el contexto de seguridad
+        var authentication = new UsernamePasswordAuthenticationToken(
+                usuario, null, usuario.getAuthorities()
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 }

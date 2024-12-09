@@ -34,7 +34,7 @@ public class AutenticacionController {
         Authentication usuarioAutenticado = authenticationManager.authenticate(authToken);
 
         // Generar el JWT token
-        String JWTtoken = tokenService.generarToken((Usuario) usuarioAutenticado.getPrincipal());
+        String JWTtoken = tokenService.generateToken((Usuario) usuarioAutenticado.getPrincipal());
 
         // Retornar el token en la respuesta
         return ResponseEntity.ok(new DatosJWTToken(JWTtoken));

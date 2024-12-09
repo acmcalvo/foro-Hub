@@ -4,11 +4,11 @@ import jakarta.validation.constraints.NotBlank;
 
 public class DatosAutenticacionUsuario {
 
-    @NotBlank
+    @NotBlank(message = "El campo login no puede estar vacío.")
     private String login;
 
-    @NotBlank
-    private String clave;
+    @NotBlank(message = "El campo clave no puede estar vacío.")
+    private String clave;  // Puedes renombrarlo como "password" si prefieres ese término
 
     // Constructor
     public DatosAutenticacionUsuario(String login, String clave) {

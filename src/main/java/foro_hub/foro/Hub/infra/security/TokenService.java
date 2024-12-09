@@ -17,7 +17,7 @@ import java.time.ZoneOffset;
 @Service
 public class TokenService {
 
-    @Value("${API_SECURITY_SECRET}")
+    @Value("${JWT_SECRET}")
     private String apiSecret;
 
     @Autowired
@@ -34,7 +34,7 @@ public class TokenService {
     }
 
     // Genera un token JWT para un usuario
-    public String generarToken(Usuario usuario) {
+    public String generateToken(Usuario usuario) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(apiSecret);
             return JWT.create()
