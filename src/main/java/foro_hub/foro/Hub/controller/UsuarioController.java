@@ -9,24 +9,24 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/usuarios")
-@SecurityRequirement(name = "bearer-key")  // Proteger con Bearer Token
+@RequestMapping("/usuarios")
+@SecurityRequirement(name = "bearer-key")  // Protect with Bearer Token
 public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService;
 
-    // Endpoint para registrar un nuevo usuario
-    @PostMapping("/registrar")
-    public ResponseEntity<Usuario> registrarUsuario(@RequestBody Usuario usuario) {
-        Usuario usuarioRegistrado = usuarioService.registrarUsuario(usuario);
-        return new ResponseEntity<>(usuarioRegistrado, HttpStatus.CREATED);
+    // Register a new user
+    @PostMapping("/register")
+    public ResponseEntity<Usuario> registerUser(@RequestBody Usuario user) {
+        Usuario registeredUser = usuarioService.registrarUsuario(user);
+        return new ResponseEntity<>(registeredUser, HttpStatus.CREATED);
     }
 
-    // Endpoint para obtener un usuario por ID (requiere Bearer Token)
-    @GetMapping("/{id}")
-    public ResponseEntity<Usuario> obtenerUsuario(@PathVariable Long id) {
-        Usuario usuario = usuarioService.obtenerUsuarioPorId(id);
-        return new ResponseEntity<>(usuario, HttpStatus.OK);
+    // Get a user by ID (requires Bearer Token)
+    @GetMapping("/{userId}")
+    public ResponseEntity<Usuario> getUser(@PathVariable Long userId) {
+        Usuario user = usuarioService.obtenerUsuarioPorId(userId);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 }

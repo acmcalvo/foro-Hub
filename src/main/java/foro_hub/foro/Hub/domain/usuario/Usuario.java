@@ -25,26 +25,24 @@ public class Usuario implements UserDetails {
     private Long id;
 
     private String login;
-    private String password;
+    private String clave;
 
-    // Lista de roles del usuario
-    @ElementCollection(fetch = FetchType.EAGER)  // Esto se usa si estás almacenando los roles en una tabla separada
-    @CollectionTable(name = "usuario_roles", joinColumns = @JoinColumn(name = "usuario_id"))
-    @Column(name = "role")
-    private List<String> roles;
+    // Lista de roles del usuario almacenados como una cadena separada por comas
+    private String roles;  // Se almacena como una cadena
 
     // Este método proporciona los roles del usuario
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Convertir los roles a SimpleGrantedAuthority
-        return roles.stream()
-                .map(role -> new SimpleGrantedAuthority(role))
+        // Convertir la cadena de roles en una lista de SimpleGrantedAuthority
+        return List.of(roles.split(","))
+                .stream()
+                .map(role -> new SimpleGrantedAuthority(role.trim()))
                 .toList();
     }
 
     @Override
     public String getPassword() {
-        return password;
+        return clave;
     }
 
     @Override

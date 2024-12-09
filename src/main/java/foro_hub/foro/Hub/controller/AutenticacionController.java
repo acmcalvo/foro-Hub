@@ -4,6 +4,7 @@ import foro_hub.foro.Hub.domain.usuario.DatosAutenticacionUsuario;
 import foro_hub.foro.Hub.domain.usuario.Usuario;
 import foro_hub.foro.Hub.infra.security.DatosJWTToken;
 import foro_hub.foro.Hub.infra.security.TokenService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,18 +26,20 @@ public class AutenticacionController {
     private TokenService tokenService;
 
     @PostMapping
-    public ResponseEntity<DatosJWTToken> autenticarUsuario(@RequestBody DatosAutenticacionUsuario datosAutenticacionUsuario) {
-        // Autenticación del usuario
-        Authentication authToken = new UsernamePasswordAuthenticationToken(
+    public ResponseEntity<DatosJWTToken> autenticarUsuario(@RequestBody @Valid DatosAutenticacionUsuario datosAutenticacionUsuario) {
+        Authentication usuarioAutenticado = authenticationManager.authenticate(createAuthToken(datosAutenticacionUsuario));
+        String jwtToken = generateJwtToken(usuarioAutenticado);
+        return ResponseEntity.ok(new DatosJWTToken(jwtToken));
+    }
+
+    private Authentication createAuthToken(DatosAutenticacionUsuario datosAutenticacionUsuario) {
+        return new UsernamePasswordAuthenticationToken(
                 datosAutenticacionUsuario.getLogin(),
                 datosAutenticacionUsuario.getClave()
         );
-        Authentication usuarioAutenticado = authenticationManager.authenticate(authToken);
+    }
 
-        // Generar el JWT token
-        String JWTtoken = tokenService.generateToken((Usuario) usuarioAutenticado.getPrincipal());
-
-        // Retornar el token en la respuesta
-        return ResponseEntity.ok(new DatosJWTToken(JWTtoken));
+    private String generateJwtToken(Authentication usuarioAutenticado) {
+        return tokenService.generateToken((Usuario) usuarioAutenticado.getPrincipal());
     }
 }

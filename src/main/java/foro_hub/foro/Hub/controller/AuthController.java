@@ -19,29 +19,28 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     @Autowired
-    private AuthenticationManager authenticationManager;
+    private AuthenticationManager authManager;
 
     @Autowired
-    private TokenService tokenService;
+    private TokenService tokenSvc;
 
-    @PostMapping("/authenticate")  // Cambio de la ruta aquí
-    public ResponseEntity<DatosJWTToken> authenticateUser(@RequestBody DatosAutenticacionUsuario authenticationData) {
-        // Autenticación del usuario
-        Authentication authToken = new UsernamePasswordAuthenticationToken(
-                authenticationData.getLogin(),
-                authenticationData.getClave()
-        );
+    @PostMapping("/authenticate")
+    public ResponseEntity<DatosJWTToken> authenticateUser(@RequestBody DatosAutenticacionUsuario authData) {
+        Authentication authenticationToken = createAuthenticationToken(authData);
 
-        // Autenticación del usuario
-        Authentication authenticatedUser = authenticationManager.authenticate(authToken);
+        Authentication authenticatedUser = authManager.authenticate(authenticationToken);
 
-        // Obtener el usuario autenticado (UserDetails -> Usuario)
-        Usuario usuarioAutenticado = (Usuario) authenticatedUser.getPrincipal();
+        Usuario loggedInUser = (Usuario) authenticatedUser.getPrincipal();
 
-        // Generar el JWT token
-        String jwtToken = tokenService.generateToken(usuarioAutenticado);
+        String jwtToken = tokenSvc.generateToken(loggedInUser);
 
-        // Retornar el token en la respuesta
         return ResponseEntity.ok(new DatosJWTToken(jwtToken));
+    }
+
+    private Authentication createAuthenticationToken(DatosAutenticacionUsuario authData) {
+        return new UsernamePasswordAuthenticationToken(
+                authData.getLogin(),
+                authData.getClave()
+        );
     }
 }

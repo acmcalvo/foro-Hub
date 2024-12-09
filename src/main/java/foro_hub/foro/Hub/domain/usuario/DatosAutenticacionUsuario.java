@@ -8,8 +8,7 @@ public class DatosAutenticacionUsuario {
     private String login;
 
     @NotBlank(message = "El campo clave no puede estar vacío.")
-    private String clave;  // Puedes renombrarlo como "password" si prefieres ese término
-
+    private String clave;
     // Constructor
     public DatosAutenticacionUsuario(String login, String clave) {
         this.login = login;
