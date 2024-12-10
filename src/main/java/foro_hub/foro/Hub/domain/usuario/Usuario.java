@@ -34,9 +34,13 @@ public class Usuario implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // Convertir la cadena de roles en una lista de SimpleGrantedAuthority
+        if (roles == null || roles.isEmpty()) {
+            return List.of(); // Retorna una lista vacía si no hay roles definidos
+        }
+
         return List.of(roles.split(","))
                 .stream()
-                .map(role -> new SimpleGrantedAuthority(role.trim()))
+                .map(role -> new SimpleGrantedAuthority(role.trim())) // El trim elimina los espacios extra
                 .toList();
     }
 

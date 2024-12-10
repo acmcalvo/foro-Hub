@@ -39,7 +39,8 @@ public class AutenticacionController {
         );
     }
 
+    // Cambiar el nombre de la función aquí para que coincida con el método correcto en TokenService
     private String generateJwtToken(Authentication usuarioAutenticado) {
-        return tokenService.generateToken((Usuario) usuarioAutenticado.getPrincipal());
+        return tokenService.generarToken((Usuario) usuarioAutenticado.getPrincipal());  // Llamada correcta
     }
 }

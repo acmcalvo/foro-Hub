@@ -32,7 +32,8 @@ public class AuthController {
 
         Usuario loggedInUser = (Usuario) authenticatedUser.getPrincipal();
 
-        String jwtToken = tokenSvc.generateToken(loggedInUser);
+        // Cambiar aquí a generarToken
+        String jwtToken = tokenSvc.generarToken(loggedInUser);  // Llamada correcta al método
 
         return ResponseEntity.ok(new DatosJWTToken(jwtToken));
     }
