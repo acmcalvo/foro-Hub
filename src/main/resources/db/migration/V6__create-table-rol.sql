@@ -1,0 +1,5 @@
+
+   CREATE TABLE rol (
+       id BIGINT AUTO_INCREMENT PRIMARY KEY,
+       nombre VARCHAR(255) UNIQUE NOT NULL
+   );
