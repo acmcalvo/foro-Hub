@@ -34,9 +34,12 @@ public class AutenticacionController {
     }
 
     private Authentication createAuthToken(DatosAutenticacionUsuario datosAutenticacionUsuario) {
+        if (datosAutenticacionUsuario == null || datosAutenticacionUsuario.login() == null || datosAutenticacionUsuario.clave() == null) {
+            throw new IllegalArgumentException("Datos de autenticación no pueden ser nulos");
+        }
         return new UsernamePasswordAuthenticationToken(
-                datosAutenticacionUsuario.getLogin(),
-                datosAutenticacionUsuario.getClave()
+                datosAutenticacionUsuario.login(),
+                datosAutenticacionUsuario.clave()
         );
     }
     private String generateJwtToken(Authentication usuarioAutenticado) {

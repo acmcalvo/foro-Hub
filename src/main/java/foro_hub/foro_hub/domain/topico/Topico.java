@@ -1,15 +1,12 @@
 package foro_hub.foro_hub.domain.topico;
 
-
 import foro_hub.foro_hub.domain.curso.Curso;
-import foro_hub.foro_hub.domain.model.usuario.Usuario;
 import jakarta.persistence.*;
 import lombok.Data;
-
-import java.time.LocalDateTime;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -31,9 +28,11 @@ public class Topico {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @ManyToOne
-    @JoinColumn(name = "autor_id")
-    private Usuario autor;
+    @NotBlank(message = "El nombre del autor no puede estar vacío")
+    private String autorNombre;
+
+    @NotBlank(message = "El correo del autor no puede estar vacío")
+    private String autorEmail;
 
     @ManyToOne
     @JoinColumn(name = "curso_id")

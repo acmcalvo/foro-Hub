@@ -1,4 +1,4 @@
-package foro_hub.foro_hub.domain.model.usuario;
+package foro_hub.foro_hub.domain.model.roles;
 
 import jakarta.persistence.*;
 import lombok.Getter;

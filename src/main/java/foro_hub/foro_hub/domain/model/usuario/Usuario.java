@@ -1,27 +1,30 @@
 package foro_hub.foro_hub.domain.model.usuario;
 
-
-
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-@Entity
-@SecurityRequirement(name = "bearer-key")
-@Data
+@Table(name = "usuario")
+@Entity(name = "Usuario")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(of = "id")
 public class Usuario implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String nombre;
-
-    private String email;
 
     private String login;
 
@@ -29,17 +32,18 @@ public class Usuario implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList(); // Cambiar si se utilizan roles/autoridades.
+        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
+
 
     @Override
     public String getPassword() {
-        return this.clave;
+        return clave;
     }
 
     @Override
     public String getUsername() {
-        return this.login;
+        return login;
     }
 
     @Override
